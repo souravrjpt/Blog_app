@@ -12,13 +12,20 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
+import Link from '@mui/material/Link';
+import PersonIcon from '@mui/icons-material/Person';
 
 import Btn from '../button/Button'
+import BasicButtons from '../button/Button';
+import { useNavigate } from 'react-router-dom';
+import { BASE_URL, CREATE_BLOG_URL, MY_BLOG_URL } from '../../constants/routes';
+import { CREATE_BLOG, LOGGED_USER, MY_BLOGS } from '../../constants/helpers';
 
-const pages = ['Products', 'Pricing', 'Blog'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const pages = ['My Blogs','Create Blog'];
+const settings = ['Logout'];
 
-function ResponsiveAppBar() {
+export const  Header = ({loggedUser, setLoggedUser}) => {
+  const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -34,8 +41,28 @@ function ResponsiveAppBar() {
   };
 
   const handleCloseUserMenu = () => {
+    // console.log(setting, event.currentTarget);
+    // localStorage.removeItem(LOGGED_USER);
+    // setLoggedUser(null);
+    // navigate(BASE_URL); 
     setAnchorElUser(null);
   };
+
+  const onClickLogout = (event, setting) => {
+    localStorage.removeItem(LOGGED_USER);
+    setLoggedUser(null);
+    navigate(BASE_URL);
+  }
+
+  const openPageClickHandler = (page) => {
+    if(page === MY_BLOGS){
+      navigate(MY_BLOG_URL);
+    }
+    if(page === CREATE_BLOG){
+      navigate(CREATE_BLOG_URL);
+    }
+  }
+
 
   return (
     <AppBar position="static">
@@ -46,7 +73,7 @@ function ResponsiveAppBar() {
             variant="h6"
             noWrap
             component="a"
-            href="/"
+            href={BASE_URL}
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -61,7 +88,7 @@ function ResponsiveAppBar() {
            
           </Typography>
 
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+          {loggedUser && <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -74,7 +101,7 @@ function ResponsiveAppBar() {
             </IconButton>
             <Menu
               id="menu-appbar"
-              anchorEl={anchorElNav}
+              // anchorEl={anchorElNav}
               anchorOrigin={{
                 vertical: 'bottom',
                 horizontal: 'left',
@@ -84,19 +111,19 @@ function ResponsiveAppBar() {
                 vertical: 'top',
                 horizontal: 'left',
               }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
+              // open={Boolean(anchorElNav)}
+              // onClose={handleCloseNavMenu}
               sx={{
                 display: { xs: 'block', md: 'none' },
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                <Button key={page} onClick={openPageClickHandler}>
                   <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
+                </Button>
               ))}
             </Menu>
-          </Box>
+          </Box>}
           <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
           <Typography
             variant="h5"
@@ -117,22 +144,42 @@ function ResponsiveAppBar() {
             LOGO
             
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+          {loggedUser && <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
+                onClick={() => openPageClickHandler(page)}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
                 {page}
               </Button>
             ))}
-          </Box>
-
-          <Box sx={{ flexGrow: 0 }}>
+          </Box>}
+          {
+           !loggedUser && <Box sx={{flexGrow: 0, width:"90%", textAlign:"right", margin:"1rem"}}>
+              <Button
+                variant='outlined'
+                sx={{
+                  background: "white"
+                }}
+              >
+                <Link
+                  href="/signin"
+                  sx={{
+                    color: "black",
+                    textDecoration: "none"
+                  }}
+                >
+                  Sign In
+                </Link>
+              </Button>
+            </Box>
+          }
+          {loggedUser && <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Typography sx={{margin: '1rem'}}>{loggedUser.name}</Typography>
+                <PersonIcon/>
               </IconButton>
             </Tooltip>
             <Menu
@@ -152,15 +199,15 @@ function ResponsiveAppBar() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+                <MenuItem key={setting} >
+                  <Typography onClick={(event) => onClickLogout(event, setting)} textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}
             </Menu>
-          </Box>
+          </Box>}
         </Toolbar>
       </Container>
     </AppBar>
   );
 }
-export default ResponsiveAppBar;
+export default Header;
