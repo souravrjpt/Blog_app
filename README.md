@@ -1,6 +1,7 @@
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## HOW TO USE
+First sign in by filling up your name, emailId and password.\
+If you want to see the whole blog then you can click on that particular blog. (You can also see the comment)\
+You can also create the blog by clicking on 'Create Blog'
 
 ## Available Scripts
 
